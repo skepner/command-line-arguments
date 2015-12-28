@@ -1,18 +1,19 @@
-# command-line-parser
+# command-line-arguments
 C++14 include-only library to parse command line arguments.
 
 ## Usage
 
-    #include "command-line-parser.hh"
-    using command_line_parser::CommandLineParser;
-    using command_line_parser::Arg;
-    using command_line_parser::Count;
-    using command_line_parser::PrintHelp;
-    using command_line_parser::CommandLineError;
+    #include "command-line-arguments.hh"
 
     int main(int argc, const char *argv[])
     {
-        auto cl = make_command_line_parser(
+        using command_line_arguments::CommandLineArguments;
+        using command_line_arguments::Arg;
+        using command_line_arguments::Count;
+        using command_line_arguments::PrintHelp;
+        using command_line_arguments::CommandLineError;
+
+        auto cl = make_command_line_arguments(
             // Switches requiring string arguments
             Arg<std::string>("str-long", "help message"), // long switch, empty default
             Arg<std::string>("str-long-default", "default value", "help message"), // long switch, specified default

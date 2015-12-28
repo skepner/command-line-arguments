@@ -8,7 +8,7 @@
 
 // ----------------------------------------------------------------------
 
-namespace command_line_parser
+namespace command_line_arguments
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wweak-vtables"
@@ -213,10 +213,10 @@ namespace command_line_parser
 
 // ----------------------------------------------------------------------
 
-    template <class ... Args> class CommandLineParser : public std::tuple<Args...>
+    template <class ... Args> class CommandLineArguments : public std::tuple<Args...>
     {
      public:
-        inline CommandLineParser(const Args&... a)
+        inline CommandLineArguments(const Args&... a)
             : std::tuple<Args...>(std::forward_as_tuple(a...)) {}
 
         void parse(int argc, const char *argv[])
@@ -329,13 +329,13 @@ namespace command_line_parser
             }
     };
 
-    template <class ... Args> std::unique_ptr<CommandLineParser<Args...>> make_command_line_parser(Args&&... args)
+    template <class ... Args> std::unique_ptr<CommandLineArguments<Args...>> make_command_line_arguments(Args&&... args)
     {
-        return std::unique_ptr<CommandLineParser<Args...>>(new CommandLineParser<Args...>(args...));
+        return std::unique_ptr<CommandLineArguments<Args...>>(new CommandLineArguments<Args...>(args...));
     }
 
 // ----------------------------------------------------------------------
 
-} // namespace command_line_parser
+} // namespace command_line_arguments
 
 // ----------------------------------------------------------------------

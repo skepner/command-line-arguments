@@ -2,11 +2,7 @@
 #include <string>
 
 
-#include "command-line-parser.hh"
-using command_line_parser::CommandLineParser;
-using command_line_parser::Arg;
-using command_line_parser::Count;
-using command_line_parser::PrintHelp;
+#include "command-line-arguments.hh"
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +13,12 @@ void test(int argc, const char** argv, const char* expected_report);
 
 int main(int argc, const char *argv[])
 {
-    auto cl = make_command_line_parser(
+    using command_line_arguments::CommandLineArguments;
+    using command_line_arguments::Arg;
+    using command_line_arguments::Count;
+    using command_line_arguments::PrintHelp;
+
+    auto cl = make_command_line_arguments(
         Arg<bool>("test", false, "run kinda regression test"),
         Arg<std::string>("str-long", "str long help"),
         Arg<std::string>("str-long-default", "long-default", "str-long-default help"),
@@ -30,7 +31,7 @@ int main(int argc, const char *argv[])
         Arg<bool>('f', "false", true, "false help"),
         Arg<Count>('v', "verbose"),
         Arg<PrintHelp>('h', "help", "print help")  // print help
-    );
+                                          );
     cl->parse(argc, argv);
     if (cl->get<bool>("test")) {
         regression_test();
@@ -60,7 +61,12 @@ void regression_test()
 
 void test(int argc, const char** argv, const char* expected_report)
 {
-    auto cl = make_command_line_parser(
+    using command_line_arguments::CommandLineArguments;
+    using command_line_arguments::Arg;
+    using command_line_arguments::Count;
+    using command_line_arguments::PrintHelp;
+
+    auto cl = make_command_line_arguments(
         Arg<std::string>("aa"),
         Arg<std::string>("bb", "cc", "dd"),
         Arg<std::string>('e', "ee", std::string(), "ff"),
@@ -71,7 +77,7 @@ void test(int argc, const char** argv, const char* expected_report)
         Arg<bool>('t', "true", false, "true help"),
         Arg<bool>('f', "false", true, "false help"),
         Arg<PrintHelp>('h', "help", "print help")  // print help
-    );
+                                          );
     cl->parse(argc, argv);
     std::stringstream s;
     cl->report(s);

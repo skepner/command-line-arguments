@@ -16,7 +16,7 @@ ifeq ($(CLANG),Y)
   STD = c++14
 else
   WEVERYTHING = -Wall -Wextra
-  STD = c++14 # c++11
+  STD = c++14
 endif
 
 WARNINGS = # -Wno-padded
@@ -33,7 +33,7 @@ DIST = dist
 all: test
 
 test: $(DIST)/test
-	#$(DIST)/test aaa --pdf /tmp/a.pdf -x
+	$(DIST)/test --test
 
 # ----------------------------------------------------------------------
 
