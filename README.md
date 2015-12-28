@@ -1,7 +1,7 @@
-## command-line-parser
+# command-line-parser
 C++14 include-only library to parse command line arguments.
 
-# Usage
+## Usage
 
     #include "command-line-parser.hh"
     using command_line_parser::CommandLineParser;
