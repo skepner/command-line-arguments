@@ -1,8 +1,13 @@
 #pragma once
 
+#include <typeinfo>
+#include <functional>
+#include <algorithm>
+#include <memory>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <list>
 #include <tuple>
 
@@ -11,8 +16,10 @@
 namespace command_line_arguments
 {
 #pragma GCC diagnostic push
+#ifdef __clang__
 #pragma GCC diagnostic ignored "-Wweak-vtables"
-    class CommandLineError : public virtual std::runtime_error
+#endif
+    class CommandLineError : public std::runtime_error
     {
      public: using std::runtime_error::runtime_error;
     };
@@ -41,7 +48,9 @@ namespace command_line_arguments
 // ----------------------------------------------------------------------
 
 #pragma GCC diagnostic push
+#ifdef __clang__
 #pragma GCC diagnostic ignored "-Wweak-vtables"
+#endif
     class ArgBase
     {
      public:

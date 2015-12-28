@@ -1,7 +1,3 @@
-#include <iostream>
-#include <string>
-
-
 #include "command-line-arguments.hh"
 
 // ----------------------------------------------------------------------
