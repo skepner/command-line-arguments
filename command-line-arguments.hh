@@ -28,8 +28,28 @@ namespace command_line_arguments
 // ----------------------------------------------------------------------
 
       // special argument type to generate help
-    class PrintHelp {};
+    class PrintHelp
+    {
+     public:
+        inline PrintHelp() : mUsage("Usage: {progname} [options]") {}
+        template <typename Text> inline PrintHelp(Text aUsage) : mUsage(aUsage) {}
+
+        inline std::string message(std::string progname) const
+            {
+                std::string msg = mUsage;
+                const std::string::size_type pos = msg.find("{progname}");
+                if (pos != std::string::npos)
+                    msg.erase(pos, 10).insert(pos, progname);
+                return msg;
+            }
+
+     private:
+        std::string mUsage;
+    };
+
     inline std::ostream& operator << (std::ostream& out, const PrintHelp&) { return out; }
+
+// ----------------------------------------------------------------------
 
       // argument type to count occurences of the corresponding switch
     class Count
@@ -273,10 +293,24 @@ namespace command_line_arguments
                         }
                     }
                 }
-                catch (PrintHelp&) {
-                    print_help();
+                catch (PrintHelp& help) {
+                    print_help(std::cerr, &help);
                     exit(1);
                 }
+            }
+
+        inline void print_help(std::ostream& out, const PrintHelp* aHelp = nullptr)
+            {
+                if (aHelp == nullptr) {
+                    try {
+                        aHelp = &get<PrintHelp>("help");
+                    }
+                    catch (CommandLineError&) {
+                        aHelp = new PrintHelp();
+                    }
+                }
+                out << aHelp->message(mProgramName) << std::endl << "Options:" << std::endl;
+                help_helper(out, std::index_sequence_for<Args...>{});
             }
 
         template <typename ArgT, typename NameT> inline const ArgT& get(NameT aName) const
@@ -331,11 +365,6 @@ namespace command_line_arguments
                 (void)unused;
             }
 
-        void print_help()
-            {
-                std::cerr << "Usage: " << mProgramName << " [options]" << std::endl << "Options:" << std::endl;
-                help_helper(std::cerr, std::index_sequence_for<Args...>{});
-            }
     };
 
     template <class ... Args> std::unique_ptr<CommandLineArguments<Args...>> make_command_line_arguments(Args&&... args)

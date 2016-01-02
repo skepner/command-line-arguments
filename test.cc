@@ -26,7 +26,7 @@ int main(int argc, const char *argv[])
         Arg<bool>('t', "true", false, "true help"),
         Arg<bool>('f', "false", true, "false help"),
         Arg<Count>('v', "verbose"),
-        Arg<PrintHelp>('h', "help", "print help")  // print help
+        Arg<PrintHelp>('h', "help", "Usage: {progname} [options]", "print help")  // print help
                                           );
     cl->parse(argc, argv);
     if (cl->get<bool>("test")) {
