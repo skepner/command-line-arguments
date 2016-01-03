@@ -83,23 +83,30 @@ namespace command_line_arguments
 
 // ----------------------------------------------------------------------
 
+    class Help
+    {
+     public:
+        inline Help() {}
+        template <typename Text> explicit inline Help(Text aMessage) : mMessage(aMessage) {}
+        inline bool has_message() const { return !mMessage.empty(); }
+        friend inline std::ostream& operator << (std::ostream& out, const Help& aHelp) { return out << aHelp.mMessage; }
+     private:
+        std::string mMessage;
+    };
+
+// ----------------------------------------------------------------------
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
     template <typename ArgT> class Arg : public ArgBase
     {
      public:
-        inline Arg(char aShortName, std::string aLongName, const ArgT& aDefault, const char* aHelp = "")
+        inline Arg(char aShortName, std::string aLongName, const ArgT& aDefault, const Help& aHelp)
             : mShortName(aShortName), mLongName(aLongName), mValue(aDefault), mHelp(aHelp) {}
-        inline Arg(char aShortName, const ArgT& aDefault, const char* aHelp = "")
+        inline Arg(char aShortName, const ArgT& aDefault, const Help& aHelp)
             : mShortName(aShortName), mValue(aDefault), mHelp(aHelp) {}
-        inline Arg(std::string aLongName, const ArgT& aDefault, const char* aHelp = "")
+        inline Arg(std::string aLongName, const ArgT& aDefault, const Help& aHelp)
             : mShortName(0), mLongName(aLongName), mValue(aDefault), mHelp(aHelp) {}
-        inline Arg(char aShortName, std::string aLongName, const char* aHelp = "")
-            : mShortName(aShortName), mLongName(aLongName), mValue(ArgT()), mHelp(aHelp) {}
-        inline Arg(char aShortName, const char* aHelp = "")
-            : mShortName(aShortName), mValue(ArgT()), mHelp(aHelp) {}
-        inline Arg(std::string aLongName, const char* aHelp = "")
-            : mShortName(0), mLongName(aLongName), mValue(ArgT()), mHelp(aHelp) {}
 
           // returns if value was consumed
         template <typename NameT> std::pair<bool, bool> match_consume(NameT aName, const char* aValue)
@@ -147,7 +154,7 @@ namespace command_line_arguments
                         out << "=<" << at << '>';
                     out << ' ';
                 }
-                if (!mHelp.empty())
+                if (mHelp.has_message())
                     out << " -- " << mHelp;
                 return out.str();
             }
@@ -159,7 +166,7 @@ namespace command_line_arguments
         char mShortName;
         std::string mLongName;
         ArgT mValue;
-        std::string mHelp;
+        Help mHelp;
 
         inline bool consume(const char* aValue)
             {
@@ -246,7 +253,13 @@ namespace command_line_arguments
     {
      public:
         inline CommandLineArguments(const Args&... a)
-            : std::tuple<Args...>(std::forward_as_tuple(a...)) {}
+            : std::tuple<Args...>(std::forward_as_tuple(a...)), mMinArgs(0), mMaxArgs(std::size_t(-1)) {}
+
+        inline void min_max(std::size_t aMinArgs, std::size_t aMaxArgs = std::size_t(-1))
+            {
+                mMinArgs = aMinArgs;
+                mMaxArgs = aMaxArgs;
+            }
 
         void parse(int argc, const char *argv[])
             {
@@ -292,6 +305,10 @@ namespace command_line_arguments
                             mArgs.push_back(argv[arg_no]);
                         }
                     }
+                    if (mArgs.size() < mMinArgs)
+                        throw CommandLineError("Too few arguments provided");
+                    if (mArgs.size() > mMaxArgs)
+                        throw CommandLineError("Too many arguments provided");
                 }
                 catch (PrintHelp& help) {
                     print_help(std::cerr, &help);
@@ -330,6 +347,7 @@ namespace command_line_arguments
      private:
         std::string mProgramName;
         std::list<std::string> mArgs;
+        std::size_t mMinArgs, mMaxArgs;
 
           // returns pair <match found, next argv was consumed>
         template <typename NameT, std::size_t ... Inds> inline std::pair<bool, bool> set_arg(NameT aName, const char* aNextArgv, std::index_sequence<Inds...>)
@@ -367,7 +385,7 @@ namespace command_line_arguments
 
     };
 
-    template <class ... Args> std::unique_ptr<CommandLineArguments<Args...>> make_command_line_arguments(Args&&... args)
+    template <class ... Args> std::unique_ptr<CommandLineArguments<Args...>> make_command_line_arguments(const Args& ... args)
     {
         return std::unique_ptr<CommandLineArguments<Args...>>(new CommandLineArguments<Args...>(args...));
     }
