@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 #include <cstring>
-#include <list>
+#include <vector>
 #include <tuple>
 
 // ----------------------------------------------------------------------
@@ -344,9 +344,14 @@ namespace command_line_arguments
                     out << ' ' << arg;
             }
 
+        inline std::string arg(std::size_t aArgNo) const
+            {
+                return mArgs[aArgNo];
+            }
+
      private:
         std::string mProgramName;
-        std::list<std::string> mArgs;
+        std::vector<std::string> mArgs;
         std::size_t mMinArgs, mMaxArgs;
 
           // returns pair <match found, next argv was consumed>

@@ -48,5 +48,7 @@ C++14 include-only library to parse command line arguments.
         std::cout << "find v: " << cl->get<Count>('v') << std::endl;
         // Count can be converted to size_t or int
         std::cout << "find v: " << int(cl->get<Count>('v')) << std::endl;
+        // Get the first argument
+        std::cout << "arg1: " << cl->arg(0) << std::endl;
         return 0;
     }
