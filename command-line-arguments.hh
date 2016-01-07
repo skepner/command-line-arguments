@@ -266,7 +266,7 @@ namespace command_line_arguments
                 mProgramName = argv[0];
                 try {
                     for (int arg_no = 1; arg_no < argc; ++arg_no) {
-                        if (argv[arg_no][0] == '-') {
+                        if (argv[arg_no][0] == '-' && argv[arg_no][1] != 0) { // single - is not an option, it is stdin or stdout
                             if (argv[arg_no][1] == '-') {
                                   // support for long option and its value separated by =
                                 const char* eq_sign = std::strchr(argv[arg_no] + 2, '=');
